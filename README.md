@@ -46,52 +46,34 @@ Subscriber is similar to ROS1 and requires `spin()` to trigger callback.
 Service is similar to ROS1 that it requires `spin()` for callbacks. \
 There are two types of clients in ROS2, synchronous clients and asynchronous clients. Synchronous clients are just like clients in ROS1 that block untill server send response. However, this can cause deadlock in ROS2. It is better to use asynchronous clients, but `spin()` is needed to trigger client update checking if response is ready.
 
-
-
-
-
-
-
-
 ## Create interface
-
-
-
-
-
-#### In interface package
-ros2 pkg create --build-type ament_cmake <interface_name>    # can't generate .msg or .srv in pure Python package
-cd ws/src/interface/
+Can only create interface in C++ packages right now. Could also write Python programs in C++ packages, but extra work is required to set it up.
+```
+cd ws/src
+ros2 pkg create --build-type ament_cmake <interface_package>
+cd <interface_package>
 mkdir msg
 mkdir srv
-
-add to CMakeLists.txt before ament_package()
+```
+To convert the interface into language-specific code (C++ or Python), add the following to `CMakeLists.txt` before `ament_package()`
 ```
 find_package(rosidl_default_generators REQUIRED)
-
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/<file>.msg"
-  "srv/<file>.srv"
+  "msg/Num.msg"
+  "srv/AddThreeInts.srv"
 )
 ```
-
-add to package.xml before <export> tag
+Since the interfaces rely on `rosidl_default_generators` for generating language specific code, add the following to `package.xml` before `<export>` tag
 ```
 <build_depend>rosidl_default_generators</build_depend>
-
 <exec_depend>rosidl_default_runtime</exec_depend>
-
 <member_of_group>rosidl_interface_packages</member_of_group>
 ```
+Now build the workspace again to use the created interface.
 
-#### In development package
-Use custom interface files in .py `from interface.msg (or srv) import <file>`
+### Use custom interface
+add `<deopend> interface_package </depend>` to `package.xml` and use the interface with `from interface_package.msg/srv import interface_filename`
 
-add to package.xml
-<depend>interface</depend>
-
-build workspace, then use `ros2 run` to start the nodes. Using python3 will not work because it will not recognize the custom interface files
+After building the workspace, both ros2 run and python3 should be able to run nodes with custom interface. Susbect that this is due to interface import goes through rclpy (not 100% sure).
 
 
-
-Can also have msg/srv files in development package. However extra work is needed to write python files in C++ package.
