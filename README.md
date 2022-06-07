@@ -46,7 +46,7 @@ Subscriber is similar to ROS1 and requires `spin()` to trigger callback.
 Service is similar to ROS1 that it requires `spin()` for callbacks. \
 There are two types of clients in ROS2, synchronous clients and asynchronous clients. Synchronous clients are just like clients in ROS1 that block untill server send response. However, this can cause deadlock in ROS2. It is better to use asynchronous clients, but `spin()` is needed to trigger client update checking if response is ready.
 
-## Create interface
+## Interface
 Can only create interface in C++ packages right now. Could also write Python programs in C++ packages, but extra work is required to set it up.
 ```
 cd ws/src
@@ -59,8 +59,7 @@ To convert the interface into language-specific code (C++ or Python), add the fo
 ```
 find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Num.msg"
-  "srv/AddThreeInts.srv"
+  "msg(or srv)/file_name.msg(or srv)"
 )
 ```
 Since the interfaces rely on `rosidl_default_generators` for generating language specific code, add the following to `package.xml` before `<export>` tag
@@ -72,8 +71,15 @@ Since the interfaces rely on `rosidl_default_generators` for generating language
 Now build the workspace again to use the created interface.
 
 ### Use custom interface
-add `<deopend> interface_package </depend>` to `package.xml` and use the interface with `from interface_package.msg/srv import interface_filename`
-
+add `<deopend> interface_package </depend>` to `package.xml` and use the interface with `from interface_package.msg/srv import interface_filename` \
 After building the workspace, both ros2 run and python3 should be able to run nodes with custom interface. Susbect that this is due to interface import goes through rclpy (not 100% sure).
 
+## Parameters
+Unlike ROS1 where parameters all exist under ros master, in ROS2 parameters exist under each node. Since there are no ros master in ROS2, direct access to paramters under other nodes is not possible. Use a service on the param node as getter and setter for the parameter, so other nodes can interact with this param.
 
+## 
+
+
+
+
+set param in launch file
