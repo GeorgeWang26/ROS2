@@ -54,32 +54,51 @@ ros2 pkg create --build-type ament_cmake <interface_package>
 cd <interface_package>
 mkdir msg
 mkdir srv
+mkdir action
 ```
 To convert the interface into language-specific code (C++ or Python), add the following to `CMakeLists.txt` before `ament_package()`
 ```
 find_package(rosidl_default_generators REQUIRED)
+
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg(or srv)/file_name.msg(or srv)"
+  "msg/Num.msg"
+  "srv/AddThreeInts.srv"
+  "action/Fibonacci.action"
 )
 ```
 Since the interfaces rely on `rosidl_default_generators` for generating language specific code, add the following to `package.xml` before `<export>` tag
 ```
 <build_depend>rosidl_default_generators</build_depend>
+
 <exec_depend>rosidl_default_runtime</exec_depend>
+
+<!-- only needed when creating action interface -->
+<depend>action_msgs</depend>
+
 <member_of_group>rosidl_interface_packages</member_of_group>
 ```
 Now build the workspace again to use the created interface.
 
 ### Use custom interface
-add `<deopend> interface_package </depend>` to `package.xml` and use the interface with `from interface_package.msg/srv import interface_filename` \
+add `<deopend> interface_package </depend>` to `package.xml` and use the interface with
+```
+from interface_package.msg import Num
+from interface_package.srv import AddThreeInts
+from interface_package.action import Fibonacci
+```
 After building the workspace, both ros2 run and python3 should be able to run nodes with custom interface. Susbect that this is due to interface import goes through rclpy (not 100% sure).
 
 ## Parameters
-Unlike ROS1 where parameters all exist under ros master, in ROS2 parameters exist under each node. Since there are no ros master in ROS2, direct access to paramters under other nodes is not possible. Use a service on the param node as getter and setter for the parameter, so other nodes can interact with this param.
+Unlike ROS1 where parameters all exist under ros master, in ROS2 parameters exist under each node. Since there are no ros master in ROS2, direct access to paramters under other nodes is not possible. Use a service on the param node as getter and setter for the parameter, so other nodes can interact with this param. Because all params exist under node, there are no more pathing as in ROS1, just use `path/subpath1/subpath2`
 
-## 
+## Action Server and Client
+Just like services, client send request to server, server send a result back to client. However, server can also send **optional** feedback to client while processing the request, before response is sent out. \
+`spin()` is needed for both server and client. Server need to activate callback to process request, and client need to use callback to get feedback and result because requests are async.
 
+## Launch
+`ros2 launch <package_name> <launch_file_name>` \
+Add `<exec_depend>ros2launch</exec_depend>` in package.xml to make sure `ros2 launch` is available after building the workspace
 
-
+ADD IN SETUP.PY TO INCLUDE LAUNCH FILES
 
 set param in launch file
