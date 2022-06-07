@@ -12,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        # Include all launch files.
         (os.path.join('share', package_name), glob('launch/*_launch.py')),
     ],
     install_requires=['setuptools'],
@@ -27,7 +28,9 @@ setup(
             "subscriber = examples.subscriber:main",
             "service = examples.service:main",
             "client = examples.client:main",
-            "param = examples.parameter:main"
+            "param = examples.parameter:main",
+            "action_server = examples.action_server:main",
+            "action_client = examples.action_client:main",
         ],
     },
 )
