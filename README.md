@@ -1,8 +1,9 @@
 # ROS 2
 
 ## Commands
+Unlike ROS1 which uses rosmsg, ROS2 uses interface to show the types. \
 `ros2 topic/service/action list -t` to show corresponded message/service/action types (what interface they are using) \
-`ros2 interface show <type>` to introspect message/service/action types (.msg/.srv/action). Unlike ROS1 which uses rosmsg, ROS2 uses interface to show the types. \
+`ros2 interface show <type>` to introspect message/service/action types (.msg/.srv/.action). \
 underlay `source /opt/ros/foxy/setup.bash` \
 overlay `source ws/install/setup.bash`
 
@@ -31,8 +32,7 @@ colcon build    # always build in ws/
 # colcon build --symlink-install     build with symbolic link so dont have to build for every change
 source ws/install/setup.bash     # source pkg to use executables (ros2 run <pkg> <executable>)
 ```
-Edit `<description>`, `<maintainer>` and `<license>` tags in package.xml \
-Match them with `description`, `maintainer`, `maintainer_email` and `license` fields in setup.py \
+Edit `<description>`, `<maintainer>` and `<license>` tags in package.xml and match them with `description`, `maintainer`, `maintainer_email` and `license` fields in setup.py \
 Include dependency in package.xml with `<depend>` tag \
 Add entry point in consolse_scripts of setup.py with `"<executable> = <pkg>.<file>:<function>"` so the node can be run with `ros2 run <pkg> <executable>` \
 Always build the workspace and source again before ros run unless using symlink build
@@ -97,8 +97,42 @@ Just like services, client send request to server, server send a result back to 
 
 ## Launch
 `ros2 launch <package_name> <launch_file_name>` \
-Add `<exec_depend>ros2launch</exec_depend>` in package.xml to make sure `ros2 launch` is available after building the workspace
+Add `<exec_depend>ros2launch</exec_depend>` in package.xml to make sure `ros2 launch` is available after building the workspace \
 
-ADD IN SETUP.PY TO INCLUDE LAUNCH FILES
+In order for colcon to find the launch files, update the `data_files` parameter in `setup.py`
+```
+from setuptools import setup
+import os
+from glob import glob
 
-set param in launch file
+package_name = "package_name"
+
+setup(
+    # other parameters
+    data_files=[
+        # other data files
+        # now all launch files with .launch.py suffix will be runnable
+        (os.path.join('share', package_name), glob('launch/*.launch.py')),
+    ]
+)
+```
+
+Sample launch file
+```
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='examples',
+            executable='param',
+            name='custom_parameter_node',
+            output='screen',
+            emulate_tty=True,
+            parameters=[
+                {'my_parameter': 'earth'}
+            ]
+        )
+    ])
+```
