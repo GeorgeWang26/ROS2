@@ -37,9 +37,7 @@ class FibonacciActionServer(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
     fibonacci_action_server = FibonacciActionServer()
-
     rclpy.spin(fibonacci_action_server)
 
 

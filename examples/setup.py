@@ -31,6 +31,7 @@ setup(
             "param = examples.parameter:main",
             "action_server = examples.action_server:main",
             "action_client = examples.action_client:main",
+            "test = examples.test:main"
         ],
     },
 )
