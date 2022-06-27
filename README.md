@@ -3,9 +3,12 @@
 ## Commands
 Unlike ROS1 which uses rosmsg, ROS2 uses interface to show the types. \
 `ros2 topic/service/action list -t` to show corresponded message/service/action types (what interface they are using) \
-`ros2 interface show <type>` to introspect message/service/action types (.msg/.srv/.action). \
+`ros2 interface show <type>` to introspect message/service/action types (.msg/.srv/.action).
+
 underlay `source /opt/ros/foxy/setup.bash` \
-overlay `source ws/install/setup.bash`
+overlay `source ws/install/setup.bash` \
+
+If `colcon build` raise error "Could not find a package configuration file provided by xxx" just install the missing package with `sudo apt-get install ros2-<ros2_version>-xxx`
 
 ## Create workspace
 ```
