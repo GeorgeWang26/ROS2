@@ -8,7 +8,7 @@ Unlike ROS1 which uses rosmsg, ROS2 uses interface to show the types. \
 underlay `source /opt/ros/foxy/setup.bash` \
 overlay `source ws/install/setup.bash` \
 
-If `colcon build` raise error "Could not find a package configuration file provided by xxx" just install the missing package with `sudo apt-get install ros2-<ros2_version>-xxx`
+If `colcon build` raise error "Could not find a package configuration file provided by xxx" just install the missing package with `sudo apt-get install ros-<ros_version>-xxx`
 
 ## Create workspace
 ```
